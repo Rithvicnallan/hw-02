@@ -84,7 +84,43 @@ The boxplots show that for both male and female runners, 10K runs have a slightl
 ## Exercise 3
 
 ```{r ex3, out.width = "80%"}
-# Write your code to answer exercise 3 here
+
+avg_distance <- strava_runs %>%
+  group_by(athlete) %>%
+  summarise(mean_distance_km = mean(distance..m.) / 1000)
+
+runner_type <- avg_distance %>%
+  mutate(type = case_when(
+    mean_distance_km > 13 ~ "Long-distance",
+    mean_distance_km < 7  ~ "Short-distance",
+    TRUE                  ~ NA
+  )) %>%
+  filter(!is.na(type))
+
+data_scatter <- strava_runs %>%
+  left_join(runner_type, by = "athlete") %>%
+  transmute(
+    type,
+    distance_km   = distance..m. / 1000,
+    avg_speed_mps = distance..m./elapsed.time..s.
+  ) %>%
+  filter(!is.na(type), !is.na(distance_km), !is.na(avg_speed_mps))
+
+
+
+ggplot(data_scatter,
+       aes(x = distance_km, y = avg_speed_mps, colour = type)) +
+  geom_point(alpha = 0.6, size = 2) +
+  stat_smooth(method = "lm",  se = FALSE, linewidth = 1.1) +
+  scale_colour_manual(values = c("Short-distance" = "forestgreen",
+                                 "Long-distance"  = "orange")) +
+  labs(
+    title = "Average Speed vs Distance",
+    subtitle = "Comparison of short- and long-distance runners",
+    x = "Distance (km)",
+    y = "Average speed (m/s)",
+    colour = "Runner type")
+
 
 
 
@@ -102,18 +138,17 @@ The boxplots show that for both male and female runners, 10K runs have a slightl
 
 ```{r ex4_good_viz, echo = FALSE, out.width = "80%"}
 # edit the file path accordingly
-knitr::include_graphics("img/good_viz.png")
+knitr::include_graphics("img/good rep.png")
 ```
 
-_Edit the text below by replacing the bold text with the appropriate information to provide a reference for your image (Please delete this message before submission!)_
 
-**Author/Organisation**, "**Title of website**" [Online]. Available at: **URL** (Accessed: **day month year**)
+**Bubbles**, "**gapminder**" [Online]. Available at: **https://www.gapminder.org/tools/#$chart-type=bubbles&url=v2** (Accessed: **31 10 2025**)
 
 
 The above image presents a good data visualisation because:
 
--   _Reason 1_
--   _Reason 2_
+-   Two clear quantitative variables, continents and population, are easily understandable through the color and size. 
+-   Color palette is distinct yet easy to comprehend.
 
 
 #### Example of a bad data visualisation
@@ -121,18 +156,18 @@ The above image presents a good data visualisation because:
 
 ```{r ex4_bad_viz, echo = FALSE, out.width = "80%"}
 # edit the file path accordingly
-knitr::include_graphics("img/bad_viz.png")
+knitr::include_graphics("img/bad rep.png")
 ```
 
-_Edit the text below by replacing the bold text with the appropriate information to provide a reference for your image (Please delete this message before submission!)_
 
-**Author/Organisation**, "**Title of website**" [Online]. Available at: **URL** (Accessed: **day month year**)
+
+**Data-to-Viz.com**, "**data-to-viz**" [Online]. Available at: **https://www.data-to-viz.com/caveat/3d.html** (Accessed: **31 10 2025**)
 
 
 
 The above image presents a bad data visualisation because:
 
--   _Reason 1_
--   _Reason 2_
+-   3-D perspective distorts slice size perception.
+-   No clear ordering or percentages labelled.
 
 
