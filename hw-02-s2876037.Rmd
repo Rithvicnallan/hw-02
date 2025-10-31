@@ -31,41 +31,52 @@ data_5k_10k <- strava_runs %>%
 ## Exercise 1
 
 ```{r ex1a, out.width="80%"}
-data_5k_10k %>% 
+
+data_5k_10k %>%
   filter(gender == "M") %>%
+  filter(!is.na(average.heart.rate..bpm.)) %>%
+  ggplot(aes(x = average.heart.rate..bpm.)) +
+  geom_histogram(bins = 20)
+
+```
+
+The distribution of average heart rate for male runners is uni modal and roughly symmetric with most observations between about 135 and 165 bpm. The center lies just under 150 bpm, and only a handful of efforts fall below 120 bpm or above 180 bpm, so extreme values are rare and the spread is moderate.
+
+```{r ex1b, out.width="80%"}
+
+data_5k_10k %>% 
+  filter(gender == "F") %>%
   filter(!is.na(average.heart.rate..bpm.)) %>%
   ggplot(aes(x = average.heart.rate..bpm.)) + 
   geom_histogram(bins = 20)
-```
-
-
-_Write your text to answer exercise 1a here (Please delete this message before submission!)_
-
-
-```{r ex1b, out.width="80%"}
-# Write your code for Ex1b here
-
-
-
-
 
 ```
 
 
-_Write your text to answer exercise 1b here (Please delete this message before submission!)_
+The distribution of average heart rate for female runners appears bimodal, with two clear peaks around 145 bpm and 165 bpm.This indicates the presence of two subgroups within the sample with them possibly being 5k and 10k.The mean lies just under 160 bpm with a relatively high variation.
 
 
 ## Exercise 2
 
 ```{r ex2, out.width = "80%"}
-# Write your code to answer exercise 2a here
+data_5k_10k %>%
+  filter(!is.na(gender)) %>%
+  ggplot(aes(y = ((elapsed.time..s.)/60/((distance..m.)/1000)), fill = event)) +
+  geom_boxplot() +
+  labs(
+    title = "Pace (min/km) for 5K vs 10K runs",
+    x = "Event",
+    y = "Pace (min/km)",
+    caption = "Outliers shown as points."
+  ) +
+  facet_wrap(~ gender)
 
 
 
 
 ```
 
-_Write your text to answer exercise 2b here (Please delete this message before submission!)_
+The boxplots show that for both male and female runners, 10K runs have a slightly lower median pace compared to 5K runs.The 5K distribution is more variable, with a larger interquartile range and several slower outliers, suggesting that the shorter event attracts a wider range of running abilities.
 
 
 
